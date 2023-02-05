@@ -4,28 +4,33 @@ const input = document.querySelector('input');
 const button = document.querySelector('button');
 
 initAppHeight();
-renderCatGif();
-form.addEventListener('submit', (e) => renderSearchedGif(e));
+renderGif(null);
+form.addEventListener('submit', (e) => renderGif(e));
 
-function renderCatGif() {
-  fetch(
-    'https://api.giphy.com/v1/gifs/translate?api_key=DVPewIBBxf577EE4gBt9GP6dtunEMElL&s=cats',
-    { mode: 'cors' }
-  )
-    .then((response) => response.json())
-    .then((response) => (img.src = response.data.images.original.url));
+async function renderGif(e) {
+  if (e) e.preventDefault();
+  try {
+    const response = await getGif(input.value);
+    const gifData = await response.json();
+    img.src = gifData.data.images.original.url;
+  } catch {
+    console.log(Error);
+  }
 }
 
-function renderSearchedGif(e) {
-  e.preventDefault();
-  fetch(
-    'https://api.giphy.com/v1/gifs/translate?api_key=DVPewIBBxf577EE4gBt9GP6dtunEMElL&s=' +
-      input.value,
-    { mode: 'cors' }
-  )
-    .then((response) => response.json())
-    .then((response) => (img.src = response.data.images.original.url))
-    .catch((error) => renderCatGif());
+function getGif(keyword) {
+  if (keyword) {
+    return fetch(
+      'https://api.giphy.com/v1/gifs/translate?api_key=DVPewIBBxf577EE4gBt9GP6dtunEMElL&s=' +
+        keyword,
+      { mode: 'cors' }
+    );
+  } else {
+    return fetch(
+      'https://api.giphy.com/v1/gifs/translate?api_key=DVPewIBBxf577EE4gBt9GP6dtunEMElL&s=cats',
+      { mode: 'cors' }
+    );
+  }
 }
 
 function initAppHeight() {
